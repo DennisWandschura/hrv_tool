@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/entry_background"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/hrv_entry_textView"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:text="HRV"
+        android:textAlignment="viewStart" />
+
+    <TextView
+        android:id="@+id/hrv_entry_textViewDate"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="11.12.2018 24:99"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/hrv_entry_textViewRMSSD"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:text="800.00 ms"
+        android:textAlignment="center" />
+</LinearLayout>

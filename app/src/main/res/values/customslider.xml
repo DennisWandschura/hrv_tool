@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomSlider">
+        <attr name="headerText" format="string" />
+        <attr name="minText" format="string" />
+        <attr name="maxText" format="string" />
+        <attr name="maxValue" format="integer"/>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">HRV Tool</string>
+
+    <string name="title_activity_find_heart_rate_monitor">FindHeartRateMonitor</string>
+    <string name="title_activity_test">Test</string>
+    <string name="title_activity_measure_hrv">Measure HRV</string>
+    <string name="title_activity_show_hrv">Show HRV Data</string>
+    <string name="title_activity_view_entries">HRV Tool</string>
+    <string name="login_strava">Login</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_hrv_tool">HRV Tool</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="rmssd">RMSSD</string>
+    <string name="_7_day_avg">7 Day Avg</string>
+    <string name="today">Today</string>
+</resources>

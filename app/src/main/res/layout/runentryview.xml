@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/run_entry_textView"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:text="Run"
+        android:textAlignment="viewStart" />
+
+    <TextView
+        android:id="@+id/run_entry_textViewDate"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:text="11.12.2018 24:99"
+        android:textAlignment="center" />
+
+    <TextView
+        android:id="@+id/run_entry_textViewDistance"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:text="800.00 m"
+        android:textAlignment="center" />
+</LinearLayout>

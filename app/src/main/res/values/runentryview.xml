@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RunEntryView">
+        <attr name="run_dateText" format="string" />
+        <attr name="run_distance" format="float" />
+    </declare-styleable>
+</resources>
