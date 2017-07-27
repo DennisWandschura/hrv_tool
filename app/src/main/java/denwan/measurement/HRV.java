@@ -3,6 +3,11 @@ package denwan.measurement;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Reader;
 import java.io.Serializable;
 
 /**
@@ -12,7 +17,7 @@ import java.io.Serializable;
 public class HRV implements Serializable {
     public static final String MEASUREMENT_TAG = "MEASUREMENT_DATETIME";
     public static final int MEASUREMENT_TAG_ID = 1337;
-    public static final int TYPE_ID = 0;
+    static final int TYPE_ID = 0;
 
     public double sdnn; // standard deviation of RR intervals
     public double rmssd; // root mean square of successive differences
@@ -61,13 +66,36 @@ public class HRV implements Serializable {
     {
             JSONObject obj = new JSONObject();
             obj.put("type", TYPE_ID);
-            obj.put("sdnn", (double)sdnn);
-            obj.put("rmssd", (double)rmssd);
-            obj.put("sdsd", (double)sdsd);
+            obj.put("sdnn", sdnn);
+            obj.put("rmssd", rmssd);
+            obj.put("sdsd", sdsd);
             obj.put("nn50", nn50);
             obj.put("nn20", nn20);
-            obj.put("pnn50", (double)pnn50);
-            obj.put("pnn20", (double)pnn20);
+            obj.put("pnn50", pnn50);
+            obj.put("pnn20", pnn20);
             return obj;
+    }
+
+    public void read(ObjectInputStream in) throws IOException
+    {
+        sdnn = in.readDouble();
+        rmssd = in.readDouble();
+        sdsd = in.readDouble();
+        nn50 = in.readInt();
+        nn20 = in.readInt();
+        pnn50 = in.readDouble();
+        pnn20 = in.readDouble();
+    }
+
+    public void write(ObjectOutputStream out) throws IOException
+    {
+        out.writeInt(TYPE_ID);
+        out.writeDouble(sdnn);
+        out.writeDouble(rmssd);
+        out.writeDouble(sdsd);
+        out.writeInt(nn50);
+        out.writeInt(nn20);
+        out.writeDouble(pnn50);
+        out.writeDouble(pnn20);
     }
 }

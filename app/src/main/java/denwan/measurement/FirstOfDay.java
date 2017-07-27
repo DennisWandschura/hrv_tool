@@ -3,6 +3,9 @@ package denwan.measurement;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
@@ -10,11 +13,19 @@ import java.io.Serializable;
  */
 
 public class FirstOfDay extends HRV implements Serializable {
-    public static final int TYPE_ID = 1;
+    static final int TYPE_ID = 1;
 
     public int sleepQuality;
     public int mentalHealth;
     public int physicalHealth;
+
+    public FirstOfDay()
+    {
+        super();
+        sleepQuality = 0;
+        mentalHealth = 0;
+        physicalHealth = 0;
+    }
 
     public FirstOfDay(HRV hrv)
     {
@@ -24,7 +35,7 @@ public class FirstOfDay extends HRV implements Serializable {
         physicalHealth = 0;
     }
 
-    public FirstOfDay(JSONObject obj) throws JSONException
+    FirstOfDay(JSONObject obj) throws JSONException
     {
         super(obj);
         sleepQuality = obj.getInt("sleepQuality");
@@ -41,5 +52,26 @@ public class FirstOfDay extends HRV implements Serializable {
             obj.put("mentalHealth", mentalHealth);
             obj.put("physicalHealth", physicalHealth);
             return obj;
+    }
+
+    @Override
+    public void read(ObjectInputStream in) throws IOException
+    {
+        super.read(in);
+
+        sleepQuality = in.readInt();
+        mentalHealth = in.readInt();
+        physicalHealth = in.readInt();
+    }
+
+    @Override
+    public void write(ObjectOutputStream out) throws IOException
+    {
+        out.writeInt(TYPE_ID);
+        super.write(out);
+
+        out.writeInt(sleepQuality);
+        out.writeInt(mentalHealth);
+        out.writeInt(physicalHealth);
     }
 }
