@@ -6,6 +6,9 @@ import android.os.Parcelable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Calendar;
 
 /**
@@ -79,19 +82,18 @@ public class DateTime implements Parcelable {
         this.minute = minute;
     }
 
-    public DateTime(JSONObject json)
+    public DateTime(JSONObject json) throws JSONException
     {
-        try {
             year = json.getInt("year");
             month = json.getInt("month");
             day = json.getInt("day");
             this.hour = json.getInt("hour");
             this.minute = json.getInt("minute");
-        }
-        catch(JSONException e)
-        {
-            throw new RuntimeException(e.toString());
-        }
+    }
+
+    public DateTime(ObjectInputStream in) throws IOException
+    {
+        read(in);
     }
 
     public void createFromParcel(Parcel in)
@@ -110,6 +112,24 @@ public class DateTime implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(year);
+        dest.writeInt(month);
+        dest.writeInt(day);
+        dest.writeInt(hour);
+        dest.writeInt(minute);
+    }
+
+    public void read(ObjectInputStream in) throws IOException
+    {
+        year = in.readInt();
+        month = in.readInt();
+        day = in.readInt();
+        hour = in.readInt();
+        minute = in.readInt();
+    }
+
+    public void write(ObjectOutputStream dest) throws IOException
+    {
         dest.writeInt(year);
         dest.writeInt(month);
         dest.writeInt(day);
