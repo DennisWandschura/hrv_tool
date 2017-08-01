@@ -1,8 +1,10 @@
-package denwan.hrv;
+package denwan.activity;
 
 import android.os.AsyncTask;
 
 import com.sweetzpot.stravazpot.activity.api.ActivityAPI;
+import com.sweetzpot.stravazpot.activity.model.*;
+import com.sweetzpot.stravazpot.activity.model.Activity;
 import com.sweetzpot.stravazpot.athlete.model.Athlete;
 import com.sweetzpot.stravazpot.authenticaton.api.AuthenticationAPI;
 import com.sweetzpot.stravazpot.authenticaton.model.AppCredentials;
@@ -15,10 +17,10 @@ import com.sweetzpot.stravazpot.common.model.Time;
 import java.util.List;
 
 /**
- * Created by tanne on 03.07.2017.
+ * Created by tanne on 26.07.2017.
  */
 
-public class StravaData {
+public class Strava {
     public interface  OnQuerySuccess
     {
         public void run();
@@ -50,7 +52,7 @@ public class StravaData {
         new QueryActivities().execute();
     }
 
-    class QueryActivities extends AsyncTask<Void, Void, List<com.sweetzpot.stravazpot.activity.model.Activity>>
+    class QueryActivities extends AsyncTask<Void, Void, List<Activity>>
     {
         @Override
         protected List<com.sweetzpot.stravazpot.activity.model.Activity> doInBackground(Void... params) {
@@ -60,7 +62,7 @@ public class StravaData {
                 //long secondsNow = System.currentTimeMillis() / 1000l;
 
                 activities = activityAPI.listMyActivities()
-                       // .before(Time.seconds((int)secondsNow))
+                        // .before(Time.seconds((int)secondsNow))
                         .after(Time.seconds(0))
                         // .after(Time.seconds((int)secondsNow))
                         // .inPage(1)
@@ -69,7 +71,7 @@ public class StravaData {
 
                 if(activities.size() > 0)
                 {
-                   // lastQueryTime = (int)activities.get(0).getStartDate().getTime();
+                    // lastQueryTime = (int)activities.get(0).getStartDate().getTime();
                     lastQueryTime = (int)activities.get(activities.size() - 1).getStartDate().getTime();
                 }
             }

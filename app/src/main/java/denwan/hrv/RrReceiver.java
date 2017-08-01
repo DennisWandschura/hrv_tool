@@ -73,53 +73,19 @@ public class RrReceiver implements AntPlusHeartRatePcc.ICalculatedRrIntervalRece
         return Math.sqrt(variance);
     }
 
-    public denwan.measurement.HRV getHrvData()
+    public float[] getHrvData()
     {
-        denwan.measurement.HRV result = new denwan.measurement.HRV();
         int n = m_RRentries.size();
-        double rr_values[] = new double[n];
+        float rr_values[] = new float[n];
 
         int i = 0;
         for(Entry iter : m_RRentries)
         {
-            double value = iter.value.doubleValue();
-            rr_values[i++] = value;
+            float value = (float)iter.value.doubleValue();
+            // convert to seconds
+            rr_values[i++] = value / 1000.0f;
         }
 
-        double sd_values[] = new double[n - 1];
-        double rmssd = 0.0;
-        double diff;
-        int nn50 = 0;
-        int nn20 = 0;
-        int sd_count = n - 1;
-        for(i = 0; i  < sd_count; ++i)
-        {
-            diff = rr_values[i + 1] - rr_values[i];
-
-            sd_values[i] = diff;
-
-            rmssd += (diff * diff);
-
-            diff = Math.abs(diff);
-
-            if(diff > 50.0)
-                ++nn50;
-
-            if(diff > 20.0)
-                ++nn20;
-        }
-
-        rmssd = Math.sqrt(rmssd / (double)sd_count); // in ms;
-
-        result.sdnn = getStandardDeviation(rr_values);
-        result.rmssd = rmssd;
-        result.sdsd = getStandardDeviation(sd_values);
-        result.nn50 = nn50;
-        result.nn20 = nn20;
-        result.pnn20 = (double)nn20 / (double)sd_count;
-        result.pnn50 = (double)nn50 / (double)sd_count;
-        //result.values = rr_values;
-
-        return result;
+       return rr_values;
     }
 }

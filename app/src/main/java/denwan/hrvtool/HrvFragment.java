@@ -11,10 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import denwan.hrv.DateTime;
-import denwan.measurement.Data;
-import denwan.measurement.FirstOfDay;
-import denwan.measurement.HRV;
+import denwan.hrv.Native;
 
 /**
  * A fragment representing a list of Items.
@@ -23,6 +20,8 @@ import denwan.measurement.HRV;
  * interface.
  */
 public class HrvFragment extends Fragment {
+
+    static final short MEASUREMENT_TAG_ID = 111;
 
     LinearLayout m_hrvEntries = null;
     OverviewFragment m_fragmentOverview = null;
@@ -41,9 +40,7 @@ public class HrvFragment extends Fragment {
     }
 
     public static HrvFragment newInstance() {
-        HrvFragment fragment = new HrvFragment();
-
-        return fragment;
+        return new HrvFragment();
     }
 
     void onClickEntry(View v)
@@ -52,9 +49,9 @@ public class HrvFragment extends Fragment {
         mListener.onFragmentInteraction(view);
     }
 
-    void addEntryToList(HRV data, DateTime dateTime)
+    void addEntryToList(int idx)
     {
-        HrvEntryView entryView = new HrvEntryView(getContext(), data, dateTime);
+        HrvEntryView entryView = new HrvEntryView(getContext(), idx);
         entryView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,13 +63,19 @@ public class HrvFragment extends Fragment {
 
     void addHrvEntriesToList()
     {
-        denwan.measurement.Data.foreachEntry(new Data.ForEachEntry()
+        /*denwan.measurement.Data.foreachEntry(new Data.ForEachEntry()
         {
             @Override
             public void onEntry(DateTime dt, HRV hrv) {
                 addEntryToList(hrv, dt);
             }
-        });
+        });*/
+
+        int entryCount = Native.getEntryCount();
+        for(int i = 0; i < entryCount; ++i)
+        {
+            addEntryToList(entryCount - i - 1);
+        }
     }
 
     @Override
@@ -125,26 +128,26 @@ public class HrvFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == denwan.measurement.HRV.MEASUREMENT_TAG_ID && resultCode == Activity.RESULT_OK)
+        if(requestCode == MEASUREMENT_TAG_ID && resultCode == Activity.RESULT_OK)
         {
-            DateTime key = data.getParcelableExtra(denwan.measurement.HRV.MEASUREMENT_TAG);
-            denwan.measurement.HRV entry = denwan.measurement.Data.getEntry(key);
+            int idx = data.getIntExtra(Native.MEASUREMENT_IDX, -1);
 
-            if(entry.getClass() == FirstOfDay.class)
+            int isFirstOfDay = Native.isFirstOfDay(idx);
+            if(isFirstOfDay == 1)
             {
-                m_fragmentOverview.update_rmssd_today(entry);
+                m_fragmentOverview.update_rmssd_today(idx);
             }
 
             m_fragmentOverview.update_rmssd_7day_avg();
 
-            addEntryToList(entry, key);
+            addEntryToList(idx);
         }
     }
 
     void onClickMeasureHRV()
     {
         Intent intent = new Intent(getContext(), MeasureHrvActivity.class);
-        startActivityForResult(intent, denwan.measurement.HRV.MEASUREMENT_TAG_ID);
+        startActivityForResult(intent, MEASUREMENT_TAG_ID);
     }
 
     /**

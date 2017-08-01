@@ -10,11 +10,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.Calendar;
+import java.util.Locale;
 
 import denwan.hrv.DateTime;
-import denwan.measurement.HRV;
+import denwan.hrv.Native;
 
 
 /**
@@ -55,38 +55,29 @@ public class OverviewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
     }
 
     public void update_rmssd_7day_avg()
     {
-        float rmssd_7davg = 0.f;
-        int counter = 0;
-        SortedMap<DateTime, HRV> submapHRV = denwan.measurement.Data.subMap(DateTime.startOfToday(-7), DateTime.startOfToday());
-        for (Map.Entry<DateTime, HRV> it : submapHRV.entrySet())
-        {
-            rmssd_7davg += it.getValue().rmssd;
-            ++counter;
-        }
+        DateTime start = DateTime.startOfToday(-7);
+        DateTime end = DateTime.startOfToday();
 
-        if(counter != 0)
-            rmssd_7davg /= (float)counter;
-
-        m_tv_rmssd_7davg.setText(String.format("%.2f", rmssd_7davg));
+        m_tv_rmssd_7davg.setText(String.format(Locale.getDefault(), "%.2f", Native.getAverageRmssd(start.year, start.month, start.day, end.year, end.month, end.day) * 1000.f));
     }
 
     void update_rmssd_today()
     {
-        HRV firstOfToday = denwan.measurement.Data.getFirstOfToday();
-        update_rmssd_today(firstOfToday);
+        DateTime dateTime = new DateTime(Calendar.getInstance());
+
+        int firstOfTodayIdx = Native.getFirstOfToday(dateTime.year, dateTime.month, dateTime.day);
+        update_rmssd_today(firstOfTodayIdx);
     }
 
-    public void update_rmssd_today( HRV firstOfToday)
+    public void update_rmssd_today(int firstOfTodayIdx)
     {
-        if(firstOfToday != null)
+        if(firstOfTodayIdx >= 0)
         {
-            m_tv_rmssd_today.setText(String.format("%.2f", firstOfToday.rmssd));
+            m_tv_rmssd_today.setText(String.format(Locale.getDefault(), "%.2f", Native.getRMSSD(firstOfTodayIdx) * 1000.f));
         }
         else
             m_tv_rmssd_today.setText("0");

@@ -7,13 +7,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import java.util.Locale;
+
 import denwan.hrv.DateTime;
-import denwan.measurement.FirstOfDay;
+import denwan.hrv.Native;
 
 public class ShowHrvActivity extends AppCompatActivity {
 
-    denwan.measurement.HRV m_entryData = null;
-    FirstOfDay m_firstOfDay = null;
+    //denwan.measurement.HRV m_entryData = null;
+   // FirstOfDay m_firstOfDay = null;
+    int m_index;
     boolean m_isFirstOfDay = false;
     int m_resultCode = 0;
 
@@ -23,9 +27,9 @@ public class ShowHrvActivity extends AppCompatActivity {
         tv.setText(text);
     }
 
-    void setTextViewText(int id, String text,double v)
+    void setTextViewText(int id, String text, float v)
     {
-        setTextViewText(id, text + String.format("%.2f", v));
+        setTextViewText(id, text + String.format(Locale.getDefault(), "%.2f", v));
     }
 
     @Override
@@ -34,24 +38,31 @@ public class ShowHrvActivity extends AppCompatActivity {
         setContentView(R.layout.activity_show_hrv);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DateTime key = null;
-        String error = new String("None");
-        try {
-            key = getIntent().getParcelableExtra(denwan.measurement.HRV.MEASUREMENT_TAG);
-        }
-        catch (Exception e)
+
+
+        m_index = getIntent().getIntExtra(Native.MEASUREMENT_IDX, -1);
+
+        if(m_index == -1)
         {
-            error = e.toString();
+            setResult(RESULT_CANCELED, null);
+            finish();
         }
 
-        m_entryData = denwan.measurement.Data.getEntry(key);
-        m_firstOfDay = null;
+        int isFirstOfDay = Native.isFirstOfDay(m_index);
+        if(isFirstOfDay == -1)
+        {
+            setResult(RESULT_CANCELED, null);
+            finish();
+        }
 
-        setTextViewText(R.id.textViewSDNN, "SDNN: ", m_entryData.sdnn);
-        setTextViewText(R.id.textViewRMSSD, "RMSSD: ",m_entryData.rmssd);
-        setTextViewText(R.id.textViewSDSD, "SDSD: ", m_entryData.sdsd);
-        setTextViewText(R.id.textViewPNN50,"PNN50: ", m_entryData.pnn50);
-        setTextViewText(R.id.textViewPNN20, "PNN20: ",m_entryData.pnn20);
+        setTextViewText(R.id.textViewAvgRR, "Avg RR: ", Native.getAvgRR(m_index) * 1000.f);
+        setTextViewText(R.id.textViewSDNN, "SDNN: ", Native.getSDNN(m_index) * 1000.f);
+        setTextViewText(R.id.textViewRMSSD, "RMSSD: ", Native.getRMSSD(m_index) * 1000.f);
+        setTextViewText(R.id.textViewSDSD, "SDSD: ", Native.getSDSD(m_index) * 1000.f);
+        setTextViewText(R.id.textViewPNN50,"PNN50: ", Native.getPNN50(m_index) * 100.f);
+        setTextViewText(R.id.textViewPNN20, "PNN20: ", Native.getPNN20(m_index) * 100.f);
+        setTextViewText(R.id.textViewLF, "LF: ", Native.getLF(m_index));
+        setTextViewText(R.id.textViewHF, "HF: ", Native.getHF(m_index));
 
         Button buttonClose = (Button)findViewById(R.id.buttonCloseHrvView);
         buttonClose.setOnClickListener(new View.OnClickListener() {
@@ -69,19 +80,18 @@ public class ShowHrvActivity extends AppCompatActivity {
         CustomSlider sliderMental = (CustomSlider)findViewById(R.id.customSliderMental);
         CustomSlider sliderPhysical = (CustomSlider)findViewById(R.id.customSliderPhysical);
         CustomSlider sliderSleep = (CustomSlider)findViewById(R.id.customSliderSleep);
-        if(m_entryData.getClass() == denwan.measurement.FirstOfDay.class)
+        if(isFirstOfDay == 1)
         {
-            m_firstOfDay = (FirstOfDay) m_entryData;
 
             sliderMental.setVisibility(View.VISIBLE);
             sliderPhysical.setVisibility(View.VISIBLE);
             sliderSleep.setVisibility(View.VISIBLE);
 
-            sliderMental.setProgress(m_firstOfDay.mentalHealth);
+            sliderMental.setProgress(Native.getMental(m_index));
             sliderMental.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    m_firstOfDay.mentalHealth = progress;
+                    Native.setMental(m_index, progress);
                 }
 
                 @Override
@@ -91,11 +101,11 @@ public class ShowHrvActivity extends AppCompatActivity {
             });
 
 
-            sliderPhysical.setProgress(m_firstOfDay.physicalHealth);
+            sliderPhysical.setProgress(Native.getPhysical(m_index));
             sliderPhysical.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    m_firstOfDay.physicalHealth = progress;
+                    Native.setPhysical(m_index, progress);
                 }
 
                 @Override
@@ -104,11 +114,11 @@ public class ShowHrvActivity extends AppCompatActivity {
                 public void onStopTrackingTouch(SeekBar seekBar) {}
             });
 
-            sliderSleep.setProgress(m_firstOfDay.sleepQuality);
+            sliderSleep.setProgress(Native.getSleep(m_index));
             sliderSleep.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    m_firstOfDay.sleepQuality = progress;
+                    Native.setSleep(m_index, progress);
                 }
 
                 @Override

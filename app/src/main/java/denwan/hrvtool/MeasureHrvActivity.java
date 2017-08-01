@@ -22,8 +22,10 @@ import com.dsi.ant.plugins.antplus.pccbase.PccReleaseHandle;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.EnumSet;
+import java.util.Locale;
 
 import denwan.hrv.DateTime;
+import denwan.hrv.Native;
 import denwan.hrv.RrReceiver;
 import denwan.hrv.HeartRateDeviceSearch;
 
@@ -40,6 +42,8 @@ public class MeasureHrvActivity extends AppCompatActivity
     RrReceiver m_rrReceiver;
     HeartRateDeviceSearch m_search;
     DateTime m_measurementTime = null;
+    boolean m_measuring = false;
+    int m_index;
 
     void releaseHandle()
     {
@@ -52,38 +56,43 @@ public class MeasureHrvActivity extends AppCompatActivity
     public void setProgressBarProgress(int p)
     {
         m_progressBar.setProgress(p);
-        m_tv_progress.setText(new String("Progress: ") + Integer.toString(p));
+        m_tv_progress.setText(String.format(Locale.getDefault(), "Progress: %d", p));
     }
 
     private void startMeasurement()
     {
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if(!m_measuring)
+        {
+            m_index = -1;
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            m_measuring = true;
 
-        releaseHandle();
+            releaseHandle();
 
-        m_measurementTime = new DateTime(Calendar.getInstance());
+            m_measurementTime = new DateTime(Calendar.getInstance());
 
-        m_releaseHandle = AntPlusHeartRatePcc.requestAccess(this, Settings.DATA.antDeviceNumber, 0,
-                base_IPluginAccessResultReceiver, base_IDeviceStateChangeReceiver);
+            m_releaseHandle = AntPlusHeartRatePcc.requestAccess(this, Settings.DATA.antDeviceNumber, 0,
+                    base_IPluginAccessResultReceiver, base_IDeviceStateChangeReceiver);
+        }
     }
 
     void stopMeasurement()
     {
+        m_measuring = false;
+
         m_hrPcc.releaseAccess();
         releaseHandle();
 
-        denwan.measurement.HRV entryData = m_rrReceiver.getHrvData();
-        boolean isFirstOfDay = denwan.measurement.Data.isFirstOfDay(m_measurementTime);
-        if(isFirstOfDay)
-        {
-            entryData = new denwan.measurement.FirstOfDay(entryData);
-        }
-        denwan.measurement.Data.addEntry(m_measurementTime, entryData);
+        float rr[] = m_rrReceiver.getHrvData();
+        int firstOfTodayIdx = Native.getFirstOfToday(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day);
+        boolean isFirstOfDay = (firstOfTodayIdx == -1);
+
+        m_index = denwan.hrv.Native.createNewEntry(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute, rr, isFirstOfDay);
 
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = new Intent(this, ShowHrvActivity.class);
-        intent.putExtra(denwan.measurement.HRV.MEASUREMENT_TAG, (Parcelable) m_measurementTime);
+        intent.putExtra(Native.MEASUREMENT_IDX, m_index);
         startActivityForResult(intent, SHOW_HRV_MEASUREMENT_RESULT);
     }
 
@@ -215,7 +224,9 @@ public class MeasureHrvActivity extends AppCompatActivity
 
 
         TextView tv_device = (TextView)findViewById(R.id.textViewDevice);
-        tv_device.setText("Device: " + Integer.toString(Settings.DATA.antDeviceNumber));
+        tv_device.setText(String.format(Locale.getDefault(), "Device: %d", Settings.DATA.antDeviceNumber));
+
+        m_index = -1;
     }
 
     protected void onStart()
@@ -225,11 +236,17 @@ public class MeasureHrvActivity extends AppCompatActivity
 
     protected void onStop() {
         super.onStop();
+
+        if(m_measuring)
+            stopMeasurement();
     }
 
     protected void onDestroy()
     {
         super.onDestroy();
+
+        if(m_measuring)
+            stopMeasurement();
 
         releaseHandle();
     }
@@ -239,7 +256,7 @@ public class MeasureHrvActivity extends AppCompatActivity
         if(requestCode == SHOW_HRV_MEASUREMENT_RESULT && resultCode == RESULT_OK)
         {
             Intent intent = new Intent();
-            intent.putExtra(denwan.measurement.HRV.MEASUREMENT_TAG, (Parcelable) m_measurementTime);
+            intent.putExtra(Native.MEASUREMENT_IDX, m_index);
             setResult(RESULT_OK, intent);
             this.finish();
         }

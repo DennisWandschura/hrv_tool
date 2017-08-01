@@ -15,6 +15,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.File;
+
+import denwan.hrv.Native;
+
 public class HrvTool extends AppCompatActivity implements HrvFragment.OnListFragmentInteractionListener, OverviewFragment.OnFragmentInteractionListener, SettingsFragment.OnFragmentInteractionListener {
 
     /**
@@ -35,10 +39,17 @@ public class HrvTool extends AppCompatActivity implements HrvFragment.OnListFrag
     OverviewFragment m_overviewFragment = null;
     HrvFragment m_hrvFragment = null;
 
+    File getFile()
+    {
+        return new File( this.getExternalFilesDir(null), "hrv.bin");
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hrv_tool);
+
+        denwan.hrv.Native.initialize();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -53,8 +64,10 @@ public class HrvTool extends AppCompatActivity implements HrvFragment.OnListFrag
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+        File file = getFile();
+        denwan.hrv.Native.loadData(file.getAbsolutePath());
         Settings.load(this);
-        denwan.measurement.Data.load(this);
+        //denwan.measurement.Data.load(this);
 
        // m_selectedPage = 0;
     }
@@ -71,7 +84,11 @@ public class HrvTool extends AppCompatActivity implements HrvFragment.OnListFrag
         super.onDestroy();
 
         Settings.save(this);
-        denwan.measurement.Data.save(this);
+        //denwan.measurement.Data.save(this);
+
+        File file = getFile();
+        denwan.hrv.Native.saveData(file.getAbsolutePath());
+        denwan.hrv.Native.shutdown();
     }
 
     @Override
@@ -100,7 +117,7 @@ public class HrvTool extends AppCompatActivity implements HrvFragment.OnListFrag
     public void onFragmentInteraction(HrvEntryView item) {
 
         Intent intent = new Intent(this, ShowHrvActivity.class);
-        intent.putExtra(denwan.measurement.HRV.MEASUREMENT_TAG, (Parcelable)item.m_dateTime);
+        intent.putExtra(Native.MEASUREMENT_IDX, item.m_idx);
         startActivity(intent);
     }
 
