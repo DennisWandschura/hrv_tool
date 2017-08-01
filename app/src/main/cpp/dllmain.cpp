@@ -414,7 +414,7 @@ extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getAvgRR(JNIEnv *env,
         return DATA->getHRV(idx)->avgRR;
     }
 
-    return -1.0;
+    return -1.0f;
 }
 
 extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getSDNN(JNIEnv *env, jobject obj, jint idx)
@@ -424,7 +424,7 @@ extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getSDNN(JNIEnv *env, 
         return DATA->getHRV(idx)->sdnn;
     }
 
-    return -1.0;
+    return -1.0f;
 }
 
 extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getRMSSD(JNIEnv *env, jobject obj, jint idx)
@@ -434,7 +434,7 @@ extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getRMSSD(JNIEnv *env,
         return DATA->getHRV(idx)->rmssd;
     }
 
-    return -1.0;
+    return -1.0f;
 }
 
 extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getSDSD(JNIEnv *env, jobject obj, jint idx)
@@ -444,7 +444,7 @@ extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getSDSD(JNIEnv *env, 
         return DATA->getHRV(idx)->sdsd;
     }
 
-    return -1.0;
+    return -1.0f;
 }
 
 extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getPNN50(JNIEnv *env, jobject obj, jint idx)
@@ -454,7 +454,7 @@ extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getPNN50(JNIEnv *env,
         return DATA->getHRV(idx)->pnn50;
     }
 
-    return -1.0;
+    return -1.0f;
 }
 
 extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getPNN20(JNIEnv *env, jobject obj, jint idx)
@@ -464,27 +464,37 @@ extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getPNN20(JNIEnv *env,
         return DATA->getHRV(idx)->pnn20;
     }
 
-    return -1.0;
+    return -1.0f;
+}
+
+extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getVLF(JNIEnv *env, jobject obj, jint idx)
+{
+    if(DATA)
+    {
+        return DATA->getHRV(idx)->pVLF;
+    }
+
+    return -1.0f;
 }
 
 extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getLF(JNIEnv *env, jobject obj, jint idx)
 {
     if(DATA)
     {
-        return DATA->getHRV(idx)->nLF;
+        return DATA->getHRV(idx)->pLF;
     }
 
-    return -1.0;
+    return -1.0f;
 }
 
 extern "C" JNIEXPORT jfloat JNICALL Java_denwan_hrv_Native_getHF(JNIEnv *env, jobject obj, jint idx)
 {
     if(DATA)
     {
-        return DATA->getHRV(idx)->nHF;
+        return DATA->getHRV(idx)->pHF;
     }
 
-    return -1.0;
+    return -1.0f;
 }
 
 extern "C" JNIEXPORT jint JNICALL Java_denwan_hrv_Native_getSleep(JNIEnv *env, jobject obj, jint idx)

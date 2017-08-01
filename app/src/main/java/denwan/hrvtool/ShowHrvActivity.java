@@ -61,6 +61,7 @@ public class ShowHrvActivity extends AppCompatActivity {
         setTextViewText(R.id.textViewSDSD, "SDSD: ", Native.getSDSD(m_index) * 1000.f);
         setTextViewText(R.id.textViewPNN50,"PNN50: ", Native.getPNN50(m_index) * 100.f);
         setTextViewText(R.id.textViewPNN20, "PNN20: ", Native.getPNN20(m_index) * 100.f);
+        setTextViewText(R.id.textViewVLF, "VLF: ", Native.getVLF(m_index));
         setTextViewText(R.id.textViewLF, "LF: ", Native.getLF(m_index));
         setTextViewText(R.id.textViewHF, "HF: ", Native.getHF(m_index));
 

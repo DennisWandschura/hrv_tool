@@ -34,6 +34,7 @@ public class Native {
     public static native float getSDSD(int idx);
     public static native float getPNN50(int idx);
     public static native float getPNN20(int idx);
+    public static native float getVLF(int idx);
     public static native float getLF(int idx);
     public static native float getHF(int idx);
 

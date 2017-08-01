@@ -92,10 +92,19 @@
                 android:textAlignment="center" />
 
             <TextView
+                android:id="@+id/textViewVLF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:lineSpacingExtra="0sp"
+                android:paddingBottom="4dp"
+                android:paddingTop="4dp"
+                android:text="VLF:"
+                android:textAlignment="center" />
+
+            <TextView
                 android:id="@+id/textViewLF"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:lineSpacingExtra="0sp"
                 android:paddingBottom="4dp"
                 android:paddingTop="4dp"
@@ -106,7 +115,6 @@
                 android:id="@+id/textViewHF"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:lineSpacingExtra="0sp"
                 android:paddingBottom="4dp"
                 android:paddingTop="4dp"
@@ -117,9 +125,6 @@
                 android:id="@+id/customSliderSleep"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/customSliderMental"
-                android:layout_weight="1"
                 app:headerText="Sleep Quality"
                 app:maxText="Very Good"
                 app:maxValue="20"
@@ -153,7 +158,6 @@
             android:id="@+id/buttonCloseHrvView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Save"
             tools:layout_editor_absoluteX="136dp"
             tools:layout_editor_absoluteY="147dp"
