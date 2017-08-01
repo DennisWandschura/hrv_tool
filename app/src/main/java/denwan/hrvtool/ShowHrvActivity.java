@@ -29,7 +29,7 @@ public class ShowHrvActivity extends AppCompatActivity {
 
     void setTextViewText(int id, String text, float v)
     {
-        setTextViewText(id, text + String.format(Locale.getDefault(), "%.2f", v));
+        setTextViewText(id, String.format(Locale.getDefault(), text, v));
     }
 
     @Override
@@ -55,15 +55,15 @@ public class ShowHrvActivity extends AppCompatActivity {
             finish();
         }
 
-        setTextViewText(R.id.textViewAvgRR, "Avg RR: ", Native.getAvgRR(m_index) * 1000.f);
-        setTextViewText(R.id.textViewSDNN, "SDNN: ", Native.getSDNN(m_index) * 1000.f);
-        setTextViewText(R.id.textViewRMSSD, "RMSSD: ", Native.getRMSSD(m_index) * 1000.f);
-        setTextViewText(R.id.textViewSDSD, "SDSD: ", Native.getSDSD(m_index) * 1000.f);
-        setTextViewText(R.id.textViewPNN50,"PNN50: ", Native.getPNN50(m_index) * 100.f);
-        setTextViewText(R.id.textViewPNN20, "PNN20: ", Native.getPNN20(m_index) * 100.f);
-        setTextViewText(R.id.textViewVLF, "VLF: ", Native.getVLF(m_index));
-        setTextViewText(R.id.textViewLF, "LF: ", Native.getLF(m_index));
-        setTextViewText(R.id.textViewHF, "HF: ", Native.getHF(m_index));
+        setTextViewText(R.id.textViewAvgRR, "Avg RR: %.2f ms", Native.getAvgRR(m_index) * 1000.f);
+        setTextViewText(R.id.textViewSDNN, "SDNN: %.2f ms", Native.getSDNN(m_index) * 1000.f);
+        setTextViewText(R.id.textViewRMSSD, "RMSSD: %.3f ms", Native.getRMSSD(m_index) * 1000.f);
+        setTextViewText(R.id.textViewSDSD, "SDSD: %.3f ms", Native.getSDSD(m_index) * 1000.f);
+        setTextViewText(R.id.textViewPNN50,"PNN50: %.2f", Native.getPNN50(m_index) * 100.f);
+        setTextViewText(R.id.textViewPNN20, "PNN20: %.2f", Native.getPNN20(m_index) * 100.f);
+        setTextViewText(R.id.textViewVLF, "VLF: %.2f", Native.getVLF(m_index));
+        setTextViewText(R.id.textViewLF, "LF: %.2f", Native.getLF(m_index));
+        setTextViewText(R.id.textViewHF, "HF: %.2f", Native.getHF(m_index));
 
         Button buttonClose = (Button)findViewById(R.id.buttonCloseHrvView);
         buttonClose.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +83,6 @@ public class ShowHrvActivity extends AppCompatActivity {
         CustomSlider sliderSleep = (CustomSlider)findViewById(R.id.customSliderSleep);
         if(isFirstOfDay == 1)
         {
-
             sliderMental.setVisibility(View.VISIBLE);
             sliderPhysical.setVisibility(View.VISIBLE);
             sliderSleep.setVisibility(View.VISIBLE);
