@@ -22,9 +22,13 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:layout_below="@+id/textView7">
+        android:layout_below="@+id/textView7"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:background="#dddddddd">
 
         <LinearLayout
+            android:id="@+id/linearLayoutShowHRV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -138,7 +142,7 @@
                 app:headerText="Physical Health"
                 app:maxText="Very Good"
                 app:maxValue="20"
-                app:minText="Very Bad" >
+                app:minText="Very Bad">
 
             </denwan.hrvtool.CustomSlider>
 
