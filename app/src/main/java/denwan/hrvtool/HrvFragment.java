@@ -49,7 +49,7 @@ public class HrvFragment extends Fragment {
         mListener.onFragmentInteraction(view);
     }
 
-    void addEntryToList(int idx)
+    void addEntryToList(int idx, int offset)
     {
         HrvEntryView entryView = new HrvEntryView(getContext(), idx);
         entryView.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +58,7 @@ public class HrvFragment extends Fragment {
                 onClickEntry(v);
             }
         });
-        m_hrvEntries.addView(entryView, 0);
+        m_hrvEntries.addView(entryView, offset);
     }
 
     void addHrvEntriesToList()
@@ -74,7 +74,7 @@ public class HrvFragment extends Fragment {
         int entryCount = Native.getEntryCount();
         for(int i = 0; i < entryCount; ++i)
         {
-            addEntryToList(entryCount - i - 1);
+            addEntryToList(entryCount - i - 1, -1);
         }
     }
 
@@ -140,7 +140,7 @@ public class HrvFragment extends Fragment {
 
             m_fragmentOverview.update_rmssd_7day_avg();
 
-            addEntryToList(idx);
+            addEntryToList(idx, 0);
         }
     }
 

@@ -18,26 +18,31 @@ struct Date
             unsigned char month, day;
         };
     };
+
+    constexpr uint32_t getHash() const
+    {
+        return (year << 16) | (month << 8) | day;
+    }
 };
 
 inline bool operator<(const Date &lhs, const Date &rhs)
 {
-    return lhs.hash < rhs.hash;
+    return lhs.getHash() < rhs.getHash();
 }
 
 inline bool operator<=(const Date &lhs, const Date &rhs)
 {
-    return lhs.hash <= rhs.hash;
+    return lhs.getHash() <= rhs.getHash();
 }
 
 inline bool operator>(const Date &lhs, const Date &rhs)
 {
-    return lhs.hash > rhs.hash;
+    return lhs.getHash() > rhs.getHash();
 }
 
 inline bool operator>=(const Date &lhs, const Date &rhs)
 {
-    return lhs.hash >= rhs.hash;
+    return lhs.getHash() >= rhs.getHash();
 }
 
 struct DateTime : public Date
@@ -51,22 +56,15 @@ struct DateTime : public Date
         };
     };
 
-    uint64_t getHash() const
+    constexpr uint64_t getHash() const
     {
-        return ((uint64_t)Date::hash | (static_cast<uint64_t>(DateTime::hash) << 32));
+       return (static_cast<uint64_t>(Date::getHash()) << 32) | ((hour << 8) | minute);
     }
 };
 
 inline bool operator<(const DateTime &lhs, const DateTime &rhs)
 {
-   if(*static_cast<const Date*>(&lhs) < *static_cast<const Date*>(&rhs))
-   {
-       return true;
-   }
-    else
-   {
-       return (lhs.hour < rhs.hour) ||(lhs.hour == rhs.hour && lhs.minute < rhs.minute);
-   }
+   return lhs.getHash() < rhs.getHash();
 }
 
 #endif //HRVAPP_DATETIME_H

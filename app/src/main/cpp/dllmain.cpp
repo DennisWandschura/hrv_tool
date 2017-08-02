@@ -121,15 +121,6 @@ struct Data
         return idx;
     }
 
-    uint64_t getEntryHash(const DateTime &key) const
-    {
-        auto it = std::lower_bound(sortedEntries_newestToOldest.begin(), sortedEntries_newestToOldest.end(), key, [](const Entry &lhs, const DateTime &rhs) {
-            return lhs.key < rhs;
-        });
-
-        return (it == sortedEntries_newestToOldest.end()) ? 0 : it->key.getHash();
-    }
-
     const HRV* getHRV(int idx) const
     {
         idx = (int)sortedEntries_newestToOldest.size() - idx - 1;

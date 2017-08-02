@@ -46,7 +46,7 @@ public class HrvEntryView extends LinearLayout {
 
     void setEntryData()
     {
-        m_textDate.setText(String.format(Locale.getDefault(), "%02d.%02d.%d %02d:%02d", m_dateTime.day, m_dateTime.month, m_dateTime.year, m_dateTime.hour, m_dateTime.minute));
+        m_textDate.setText(String.format(Locale.getDefault(), "%02d.%02d.%d %02d:%02d", m_dateTime.day, m_dateTime.month + 1, m_dateTime.year, m_dateTime.hour, m_dateTime.minute));
         float rmssd = Native.getRMSSD(m_idx) * 1000.0f;
         m_textRmssd.setText(String.format(Locale.getDefault(), "%.2f ms", rmssd));
         m_textLnRmssd.setText(String.format(Locale.getDefault(), "%.2f", Math.log(rmssd)));

@@ -59,8 +59,8 @@ public class OverviewFragment extends Fragment {
 
     public void update_rmssd_7day_avg()
     {
-        DateTime start = DateTime.startOfToday(-7);
-        DateTime end = DateTime.startOfToday();
+        DateTime start = DateTime.startOfToday(-8);
+        DateTime end = DateTime.startOfToday(-1);
 
         m_tv_rmssd_7davg.setText(String.format(Locale.getDefault(), "%.2f", Native.getAverageRmssd(start.year, start.month, start.day, end.year, end.month, end.day) * 1000.f));
     }
