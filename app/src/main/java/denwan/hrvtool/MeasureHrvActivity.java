@@ -43,6 +43,7 @@ public class MeasureHrvActivity extends AppCompatActivity
     HeartRateDeviceSearch m_search;
     DateTime m_measurementTime = null;
     boolean m_measuring = false;
+    boolean m_updatedIndices;
     int m_index;
 
     void releaseHandle()
@@ -78,22 +79,31 @@ public class MeasureHrvActivity extends AppCompatActivity
 
     void stopMeasurement()
     {
-        m_measuring = false;
+        if(m_measuring) {
+            m_measuring = false;
 
-        m_hrPcc.releaseAccess();
-        releaseHandle();
+            m_hrPcc.releaseAccess();
+            releaseHandle();
 
-        float rr[] = m_rrReceiver.getHrvData();
-        int firstOfTodayIdx = Native.getFirstOfToday(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day);
-        boolean isFirstOfDay = (firstOfTodayIdx == -1);
+            float rr[] = m_rrReceiver.getHrvData();
+            int firstOfTodayIdx = Native.getFirstOfToday(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day);
+            boolean isFirstOfDay = (firstOfTodayIdx == -1);
 
-        m_index = denwan.hrv.Native.createNewEntry(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute, rr, isFirstOfDay);
+            m_updatedIndices = false;
+            m_index = denwan.hrv.Native.createNewEntry(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute, rr, isFirstOfDay);
+            if (m_index == -1) {
+                Native.updateIndices();
 
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                m_index = Native.getIndex(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute);
+                m_updatedIndices= true;
+            }
 
-        Intent intent = new Intent(this, ShowHrvActivity.class);
-        intent.putExtra(Native.MEASUREMENT_IDX, m_index);
-        startActivityForResult(intent, SHOW_HRV_MEASUREMENT_RESULT);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            Intent intent = new Intent(this, ShowHrvActivity.class);
+            intent.putExtra(Native.MEASUREMENT_IDX, m_index);
+            startActivityForResult(intent, SHOW_HRV_MEASUREMENT_RESULT);
+        }
     }
 
     public void onDeviceFound(HeartRateDeviceSearch.MultiDeviceSearchResultWithRSSI result)
@@ -180,6 +190,7 @@ public class MeasureHrvActivity extends AppCompatActivity
         m_progressBar = (ProgressBar)findViewById(R.id.progressBar2);
         m_tv_progress = (TextView) findViewById(R.id.textViewProgress);
         m_tv_hr = (TextView) findViewById(R.id.textViewHeartRate);
+        m_updatedIndices = false;
 
         final float measurementTimeMiliseconds = (60000.f * Settings.DATA.measurementMinutes);
         m_timer = new CountDownTimer((int)measurementTimeMiliseconds, 60) {
@@ -257,7 +268,11 @@ public class MeasureHrvActivity extends AppCompatActivity
         {
             Intent intent = new Intent();
             intent.putExtra(Native.MEASUREMENT_IDX, m_index);
+            intent.putExtra(Native.UPDATE_INDICES, m_updatedIndices);
             setResult(RESULT_OK, intent);
+
+            m_updatedIndices = false;
+
             this.finish();
         }
     }

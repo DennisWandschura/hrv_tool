@@ -10,6 +10,7 @@ public class Native {
     }
 
     public static final String MEASUREMENT_IDX = "MEASUREMENT_DATETIME";
+    public static final String UPDATE_INDICES = "UPDATE_INDICES";
 
     public static native void initialize();
     public static native void shutdown();
@@ -17,12 +18,15 @@ public class Native {
     public static native void saveData(String file);
     public static native int loadData(String file);
 
+    // returns index or -1 if indices were changed, -2 on error
     public static native int createNewEntry(int year, int month, int day, int hour, int minute, float rr[], boolean isFirstOfDay);
+    public static native void updateIndices();
 
     public static native int getEntryCount();
     public static native int getFirstOfToday(int year, int month, int day);
 
     public static native DateTime getDateTime(int idx);
+    public static native int getIndex(int year, int month, int day, int hour, int minute);
 
     // get average rmssd [start, end]
     public static native float getAverageRmssd(int start_year, int start_month, int start_day, int end_year, int end_month, int end_day);

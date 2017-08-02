@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
+
 import denwan.hrv.Native;
 
 /**
@@ -25,6 +27,7 @@ public class HrvFragment extends Fragment {
 
     LinearLayout m_hrvEntries = null;
     OverviewFragment m_fragmentOverview = null;
+    ArrayList<HrvEntryView> m_hrv_views;
     private OnListFragmentInteractionListener mListener;
 
     /**
@@ -59,6 +62,7 @@ public class HrvFragment extends Fragment {
             }
         });
         m_hrvEntries.addView(entryView, offset);
+        m_hrv_views.add(entryView);
     }
 
     void addHrvEntriesToList()
@@ -74,7 +78,7 @@ public class HrvFragment extends Fragment {
         int entryCount = Native.getEntryCount();
         for(int i = 0; i < entryCount; ++i)
         {
-            addEntryToList(entryCount - i - 1, -1);
+            addEntryToList(i, 0);
         }
     }
 
@@ -89,6 +93,7 @@ public class HrvFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_hrv, container, false);
 
         m_hrvEntries = (LinearLayout)view.findViewById(R.id.fragment_hrv_hrv_scroll_list);
+        m_hrv_views = new ArrayList<HrvEntryView>();
 
         Button buttonMeasureHrv = (Button)view.findViewById(R.id.fragment_hrv_button_measure);
         buttonMeasureHrv.setOnClickListener(new View.OnClickListener() {
@@ -131,6 +136,14 @@ public class HrvFragment extends Fragment {
         if(requestCode == MEASUREMENT_TAG_ID && resultCode == Activity.RESULT_OK)
         {
             int idx = data.getIntExtra(Native.MEASUREMENT_IDX, -1);
+            boolean updateIndices = data.getBooleanExtra(Native.UPDATE_INDICES, false);
+
+            if(updateIndices)
+            {
+                for (HrvEntryView it : m_hrv_views) {
+                    it.updateIndex();
+                }
+            }
 
             int isFirstOfDay = Native.isFirstOfDay(idx);
             if(isFirstOfDay == 1)

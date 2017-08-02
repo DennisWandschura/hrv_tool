@@ -51,4 +51,9 @@ public class HrvEntryView extends LinearLayout {
         m_textRmssd.setText(String.format(Locale.getDefault(), "%.2f ms", rmssd));
         m_textLnRmssd.setText(String.format(Locale.getDefault(), "%.2f", Math.log(rmssd)));
     }
+
+    public void updateIndex()
+    {
+        m_idx = Native.getIndex(m_dateTime.year, m_dateTime.month, m_dateTime.day, m_dateTime.hour, m_dateTime.minute);
+    }
 }
