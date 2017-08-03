@@ -55,28 +55,13 @@ public class ShowHrvActivity extends AppCompatActivity {
             finish();
         }
 
-        setTextViewText(R.id.textViewAvgRR, "Avg RR: %.2f ms", Native.getAvgRR(m_index) * 1000.f);
         setTextViewText(R.id.textViewSDNN, "SDNN: %.2f ms", Native.getSDNN(m_index) * 1000.f);
         setTextViewText(R.id.textViewRMSSD, "RMSSD: %.3f ms", Native.getRMSSD(m_index) * 1000.f);
-        setTextViewText(R.id.textViewSDSD, "SDSD: %.3f ms", Native.getSDSD(m_index) * 1000.f);
         setTextViewText(R.id.textViewPNN50,"PNN50: %.2f", Native.getPNN50(m_index) * 100.f);
         setTextViewText(R.id.textViewPNN20, "PNN20: %.2f", Native.getPNN20(m_index) * 100.f);
-        setTextViewText(R.id.textViewVLF, "VLF: %.2f", Native.getVLF(m_index));
-        setTextViewText(R.id.textViewLF, "LF: %.2f", Native.getLF(m_index));
-        setTextViewText(R.id.textViewHF, "HF: %.2f", Native.getHF(m_index));
 
-        Button buttonClose = (Button)findViewById(R.id.buttonCloseHrvView);
-        buttonClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                });
-            }
-        });
+        DateTime dateTime = Native.getDateTime(m_index);
+        setTextViewText(R.id.textViewHRVEntry, String.format(Locale.getDefault(), "%d.%d.%d %d:%d", dateTime.day, dateTime.month, dateTime.year, dateTime.hour, dateTime.minute));
 
         CustomSlider sliderMental = (CustomSlider)findViewById(R.id.customSliderMental);
         CustomSlider sliderPhysical = (CustomSlider)findViewById(R.id.customSliderPhysical);

@@ -8,21 +8,23 @@
     tools:context="denwan.hrvtool.ShowHrvActivity"
     tools:showIn="@layout/activity_show_hrv">
 
-        <TextView
-            android:id="@+id/textView7"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Entry Data"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+    <TextView
+        android:id="@+id/textViewHRVEntry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:paddingBottom="10dp"
+        android:paddingTop="5dp"
+        android:text="Entry Data"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:layout_below="@+id/textView7"
+        android:layout_below="@+id/textViewHRVEntry"
         android:layout_marginEnd="5dp"
         android:layout_marginStart="5dp"
         android:background="#dddddddd">
@@ -32,17 +34,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textViewAvgRR"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:lineSpacingExtra="0sp"
-                android:paddingBottom="4dp"
-                android:paddingTop="4dp"
-                android:text="Avg RR:"
-                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/textViewSDNN"
@@ -66,16 +57,6 @@
                 android:textAlignment="center" />
 
             <TextView
-                android:id="@+id/textViewSDSD"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingBottom="4dp"
-                android:paddingTop="4dp"
-                android:text="SDSD:"
-                android:textAlignment="center" />
-
-            <TextView
                 android:id="@+id/textViewPNN50"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -93,36 +74,6 @@
                 android:paddingBottom="4dp"
                 android:paddingTop="4dp"
                 android:text="PNN20:"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/textViewVLF"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lineSpacingExtra="0sp"
-                android:paddingBottom="4dp"
-                android:paddingTop="4dp"
-                android:text="VLF:"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/textViewLF"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lineSpacingExtra="0sp"
-                android:paddingBottom="4dp"
-                android:paddingTop="4dp"
-                android:text="LF:"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/textViewHF"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:lineSpacingExtra="0sp"
-                android:paddingBottom="4dp"
-                android:paddingTop="4dp"
-                android:text="HF:"
                 android:textAlignment="center" />
 
             <denwan.hrvtool.CustomSlider
@@ -157,16 +108,5 @@
                 app:minText="Very Bad" />
         </LinearLayout>
     </ScrollView>
-
-    <Button
-            android:id="@+id/buttonCloseHrvView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            tools:layout_editor_absoluteX="136dp"
-            tools:layout_editor_absoluteY="147dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="31dp" />
 
 </RelativeLayout>
