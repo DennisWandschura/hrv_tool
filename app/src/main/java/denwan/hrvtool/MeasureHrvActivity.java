@@ -237,6 +237,7 @@ public class MeasureHrvActivity extends AppCompatActivity
         TextView tv_device = (TextView)findViewById(R.id.textViewDevice);
         tv_device.setText(String.format(Locale.getDefault(), "Device: %d", Settings.DATA.antDeviceNumber));
 
+        m_measuring = false;
         m_index = -1;
     }
 
