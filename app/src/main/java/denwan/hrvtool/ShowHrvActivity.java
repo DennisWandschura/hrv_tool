@@ -61,7 +61,7 @@ public class ShowHrvActivity extends AppCompatActivity {
         setTextViewText(R.id.textViewPNN20, "PNN20: %.2f", Native.getPNN20(m_index) * 100.f);
 
         DateTime dateTime = Native.getDateTime(m_index);
-        setTextViewText(R.id.textViewHRVEntry, String.format(Locale.getDefault(), "%d.%d.%d %d:%d", dateTime.day, dateTime.month, dateTime.year, dateTime.hour, dateTime.minute));
+        setTextViewText(R.id.textViewHRVEntry, String.format(Locale.getDefault(), "%02d.%02d.%d %02d:%02d", dateTime.day, dateTime.month + 1, dateTime.year, dateTime.hour, dateTime.minute));
 
         CustomSlider sliderMental = (CustomSlider)findViewById(R.id.customSliderMental);
         CustomSlider sliderPhysical = (CustomSlider)findViewById(R.id.customSliderPhysical);
