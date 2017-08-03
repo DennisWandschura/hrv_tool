@@ -67,6 +67,21 @@ inline bool operator<(const DateTime &lhs, const DateTime &rhs)
    return lhs.getHash() < rhs.getHash();
 }
 
+inline bool operator<=(const DateTime &lhs, const DateTime &rhs)
+{
+    return lhs.getHash() <= rhs.getHash();
+}
+
+inline bool operator>(const DateTime &lhs, const DateTime &rhs)
+{
+    return lhs.getHash() > rhs.getHash();
+}
+
+inline bool operator>=(const DateTime &lhs, const DateTime &rhs)
+{
+    return lhs.getHash() > rhs.getHash();
+}
+
 inline bool operator==(const DateTime &lhs, const DateTime &rhs)
 {
     return lhs.getHash() == rhs.getHash();
