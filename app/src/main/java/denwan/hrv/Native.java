@@ -31,6 +31,8 @@ public class Native {
     // get average rmssd [start, end]
     public static native float getAverageRmssd(int start_year, int start_month, int start_day, int end_year, int end_month, int end_day);
 
+    public static native float getAverageRmssd1(int year, int month, int day);
+
     public static native int isFirstOfDay(int idx);
     public static native float getAvgRR(int idx);
     public static native float getSDNN(int idx);

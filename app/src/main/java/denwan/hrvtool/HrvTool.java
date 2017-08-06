@@ -84,7 +84,6 @@ public class HrvTool extends AppCompatActivity implements HrvFragment.OnListFrag
         super.onDestroy();
 
         Settings.save(this);
-        //denwan.measurement.Data.save(this);
 
         File file = getFile();
         denwan.hrv.Native.saveData(file.getAbsolutePath());
@@ -168,6 +167,8 @@ public class HrvTool extends AppCompatActivity implements HrvFragment.OnListFrag
                 return HrvFragment.newInstance();
             }
             else if(position == 2)
+                return ChartFragment.newInstance();
+            else if(position == 3)
                 return SettingsFragment.newInstance();
             else
                 return null;
@@ -176,7 +177,7 @@ public class HrvTool extends AppCompatActivity implements HrvFragment.OnListFrag
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 4;
         }
 
         @Override
@@ -188,6 +189,8 @@ public class HrvTool extends AppCompatActivity implements HrvFragment.OnListFrag
                 case 1:
                     return "HRV";
                 case 2:
+                    return "Charts";
+                case 3:
                     return "Settings";
             }
             return null;

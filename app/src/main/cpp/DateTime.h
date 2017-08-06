@@ -45,6 +45,11 @@ inline bool operator>=(const Date &lhs, const Date &rhs)
     return lhs.getHash() >= rhs.getHash();
 }
 
+inline bool operator==(const Date &lhs, const Date &rhs)
+{
+    return lhs.getHash() == rhs.getHash();
+}
+
 struct DateTime : public Date
 {
     union

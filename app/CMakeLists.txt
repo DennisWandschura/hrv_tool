@@ -17,6 +17,7 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
+             src/main/cpp/Data.cpp
              src/main/cpp/HRV.cpp
              src/main/cpp/frequencyDomain.cpp src/main/cpp/city.cpp  src/main/cpp/dllmain.cpp)
 
