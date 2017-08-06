@@ -1,0 +1,8 @@
+HRV Tool
+
+Get Time/Frequency Domain data of RR data from ANT+ HR monitor.
+Currently only displaying SDNN, RMSSD, PNN50 and PNN20.
+
+Future:
+Get activities from STRAVA
+Add charts comparing HRV data with Activiy data (for example training load with rmssd)
