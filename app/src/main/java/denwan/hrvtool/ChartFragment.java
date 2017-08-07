@@ -10,12 +10,16 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import denwan.hrv.DateTime;
 import denwan.hrv.Native;
@@ -30,6 +34,26 @@ import denwan.hrv.Native;
  * create an instance of this fragment.
  */
 public class ChartFragment extends Fragment {
+
+    private class MyYAxisValueFormatter implements IAxisValueFormatter {
+
+        DateTime m_dateTimes[];
+
+        MyYAxisValueFormatter(DateTime dt[]) {
+            super();
+
+            m_dateTimes = dt;
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            // "value" represents the position of the label on the axis (x or y)
+
+            int idx = (int)value;
+
+            return String.format(Locale.getDefault(), "%02d.%02d.%d", m_dateTimes[idx].day, m_dateTimes[idx].month, m_dateTimes[idx].year);
+        }
+    }
 
     private LineChart m_lineChart;
     private LineDataSet m_dataSet;
@@ -47,9 +71,7 @@ public class ChartFragment extends Fragment {
      * @return A new instance of fragment ChartFragment.
      */
     public static ChartFragment newInstance() {
-        ChartFragment fragment = new ChartFragment();
-
-        return fragment;
+        return new ChartFragment();
     }
 
     @Override
@@ -63,6 +85,7 @@ public class ChartFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        DateTime dt[] = new DateTime[7];
         m_chartEntries = new ArrayList<>();
         for(int i = 0; i < 7; ++i)
         {
@@ -70,11 +93,17 @@ public class ChartFragment extends Fragment {
             float rmssd = Native.getAverageRmssd1(today.year, today.month, today.day) * 1000.f;
 
             m_chartEntries.add(new Entry(i, rmssd));
+
+            dt[i] = today;
         }
 
         m_dataSet = new LineDataSet(m_chartEntries, "RMSSD");
         LineData lineData = new LineData(m_dataSet);
         m_lineChart.setData(lineData);
+        m_lineChart.getDescription().setEnabled(false);
+        XAxis xAxis = m_lineChart.getXAxis();
+        xAxis.setValueFormatter(new MyYAxisValueFormatter(dt));
+        xAxis.setTextSize(8.f);
         m_lineChart.invalidate(); // refresh
     }
 
