@@ -1,4 +1,4 @@
-HRV Tool
+HRV Tool Android app
 
 Get Time/Frequency Domain data of RR data from ANT+ HR monitor.
 Currently only displaying SDNN, RMSSD, PNN50 and PNN20.
