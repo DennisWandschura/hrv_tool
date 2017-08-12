@@ -12,17 +12,17 @@ import java.util.ArrayList;
 
 public class RrReceiver implements AntPlusHeartRatePcc.ICalculatedRrIntervalReceiver
 {
-    public class Entry
+    class Entry
     {
         long estTimestamp;
         public java.math.BigDecimal value;
-        public AntPlusHeartRatePcc.RrFlag flag;
+        AntPlusHeartRatePcc.RrFlag flag;
 
         Entry(long timestamp, BigDecimal v, AntPlusHeartRatePcc.RrFlag f){ estTimestamp = timestamp; value=v; flag=f;}
-
-
     };
-    ArrayList<Entry> m_RRentries;
+
+    private ArrayList<Entry> m_RRentries;
+    private int m_error = 0;
 
     public RrReceiver()
     {
@@ -41,8 +41,10 @@ public class RrReceiver implements AntPlusHeartRatePcc.ICalculatedRrIntervalRece
                 break;
             case DATA_SOURCE_AVERAGED:
                 break;
-            case HEART_RATE_ZERO_DETECTED:
+            case HEART_RATE_ZERO_DETECTED: {
+                m_error = 1;
                 return;
+            }
             case UNRECOGNIZED:
                 return;
         }
@@ -73,8 +75,12 @@ public class RrReceiver implements AntPlusHeartRatePcc.ICalculatedRrIntervalRece
         return Math.sqrt(variance);
     }
 
+    // returns null on error, else rr values in seconds
     public float[] getHrvData()
     {
+        if(m_error != 0)
+            return null;
+
         int n = m_RRentries.size();
         float rr_values[] = new float[n];
 

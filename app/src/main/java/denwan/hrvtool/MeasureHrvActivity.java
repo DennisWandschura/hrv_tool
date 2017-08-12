@@ -3,7 +3,6 @@ package denwan.hrvtool;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -11,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dsi.ant.plugins.antplus.pcc.AntPlusHeartRatePcc;
 import com.dsi.ant.plugins.antplus.pcc.defines.DeviceState;
@@ -29,7 +29,7 @@ import denwan.hrv.Native;
 import denwan.hrv.RrReceiver;
 import denwan.hrv.HeartRateDeviceSearch;
 
-public class MeasureHrvActivity extends AppCompatActivity
+public class MeasureHrvActivity extends AppCompatActivity implements AntPluginPcc.IPluginAccessResultReceiver<AntPlusHeartRatePcc>
 {
     public static final int SHOW_HRV_MEASUREMENT_RESULT = 999;
 
@@ -73,11 +73,11 @@ public class MeasureHrvActivity extends AppCompatActivity
             m_measurementTime = new DateTime(Calendar.getInstance());
 
             m_releaseHandle = AntPlusHeartRatePcc.requestAccess(this, Settings.DATA.antDeviceNumber, 0,
-                    base_IPluginAccessResultReceiver, base_IDeviceStateChangeReceiver);
+                    this, base_IDeviceStateChangeReceiver);
         }
     }
 
-    void stopMeasurement()
+    void stopMeasurement(boolean failed)
     {
         if(m_measuring) {
             m_measuring = false;
@@ -85,24 +85,34 @@ public class MeasureHrvActivity extends AppCompatActivity
             m_hrPcc.releaseAccess();
             releaseHandle();
 
-            float rr[] = m_rrReceiver.getHrvData();
-            int firstOfTodayIdx = Native.getFirstOfToday(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day);
-            boolean isFirstOfDay = (firstOfTodayIdx == -1);
+            if(!failed)
+            {
+                float rr[] = m_rrReceiver.getHrvData();
+                if(rr == null)
+                {
+                    Toast.makeText(this, "Error during measurement, RR interval of 0!", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    int firstOfTodayIdx = Native.getFirstOfToday(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day);
+                    boolean isFirstOfDay = (firstOfTodayIdx == -1);
 
-            m_updatedIndices = false;
-            m_index = denwan.hrv.Native.createNewEntry(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute, rr, isFirstOfDay);
-            if (m_index == -1) {
-                Native.updateIndices();
+                    m_updatedIndices = false;
+                    m_index = denwan.hrv.Native.createNewEntry(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute, rr, isFirstOfDay);
+                    if (m_index == -1) {
+                        Native.updateIndices();
 
-                m_index = Native.getIndex(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute);
-                m_updatedIndices= true;
+                        m_index = Native.getIndex(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute);
+                        m_updatedIndices= true;
+                    }
+
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+                    Intent intent = new Intent(this, ShowHrvActivity.class);
+                    intent.putExtra(Native.MEASUREMENT_IDX, m_index);
+                    startActivityForResult(intent, SHOW_HRV_MEASUREMENT_RESULT);
+                }
             }
-
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-            Intent intent = new Intent(this, ShowHrvActivity.class);
-            intent.putExtra(Native.MEASUREMENT_IDX, m_index);
-            startActivityForResult(intent, SHOW_HRV_MEASUREMENT_RESULT);
         }
     }
 
@@ -140,6 +150,12 @@ public class MeasureHrvActivity extends AppCompatActivity
         }
     }
 
+    void cancelMeasurement()
+    {
+        Toast.makeText(this, "Aborted reading, HR of 0 detected.", Toast.LENGTH_SHORT).show();
+        stopMeasurement(true);
+    }
+
     void subscribeToHrEvents()
     {
         m_hrPcc.subscribeHeartRateDataEvent(new AntPlusHeartRatePcc.IHeartRateDataReceiver() {
@@ -148,10 +164,10 @@ public class MeasureHrvActivity extends AppCompatActivity
                                            final int computedHeartRate, final long heartBeatCount,
                                            final BigDecimal heartBeatEventTime, final AntPlusHeartRatePcc.DataState dataState) {
 
-                final boolean isInitialValue = AntPlusHeartRatePcc.DataState.ZERO_DETECTED.equals(dataState);
+                final boolean isZeroValue = AntPlusHeartRatePcc.DataState.ZERO_DETECTED.equals(dataState);
                 // Mark heart rate with asterisk if zero detected
-                final String textHeartRate = String.valueOf(computedHeartRate)
-                        + (isInitialValue ? "*" : "");
+                //final String textHeartRate = String.valueOf(computedHeartRate)
+                //        + (isInitialValue ? "*" : "");
 
 
                 // Mark heart beat count and heart beat event time with asterisk if initial value
@@ -167,7 +183,13 @@ public class MeasureHrvActivity extends AppCompatActivity
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        m_tv_hr.setText(textHeartRate);
+
+                        if(isZeroValue)
+                        {
+                            cancelMeasurement();
+                        }
+                        else
+                            m_tv_hr.setText(String.valueOf(computedHeartRate));
                     }
                 });
             }
@@ -213,7 +235,7 @@ public class MeasureHrvActivity extends AppCompatActivity
                     @Override
                     public void run() {
                         setProgressBarProgress(100);
-                        stopMeasurement();
+                        stopMeasurement(false);
                     }
                 });
             }
@@ -250,7 +272,7 @@ public class MeasureHrvActivity extends AppCompatActivity
         super.onStop();
 
         if(m_measuring)
-            stopMeasurement();
+            stopMeasurement(true);
     }
 
     protected void onDestroy()
@@ -258,7 +280,7 @@ public class MeasureHrvActivity extends AppCompatActivity
         super.onDestroy();
 
         if(m_measuring)
-            stopMeasurement();
+            stopMeasurement(true);
 
         releaseHandle();
     }
@@ -278,47 +300,43 @@ public class MeasureHrvActivity extends AppCompatActivity
         }
     }
 
-    AntPluginPcc.IPluginAccessResultReceiver<AntPlusHeartRatePcc> base_IPluginAccessResultReceiver =
-            new AntPluginPcc.IPluginAccessResultReceiver<AntPlusHeartRatePcc>()
-            {
-                //Handle the result, connecting to events on success or reporting failure to user.
-                @Override
-                public void onResultReceived(AntPlusHeartRatePcc result, RequestAccessResult resultCode,
-                                             DeviceState initialDeviceState)
-                {
-                    switch(resultCode)
-                    {
-                        case SUCCESS:
-                            m_hrPcc = result;
-                            //tv_status.setText(result.getDeviceName() + ": " + initialDeviceState);
-                            //showDataDisplay(result.getDeviceName() + ": " + initialDeviceState);
-                            subscribeToHrEvents();
-                            // if(!result.supportsRssi())
-                            //    tv_rssi.setText("N/A");
-                            break;
-                        case CHANNEL_NOT_AVAILABLE:
-                            // Toast.makeText(Activity_HeartRateDisplayBase.this, "Channel Not Available", Toast.LENGTH_SHORT).show();
-                            //  tv_status.setText("Error. Do Menu->Reset.");
-                            onRequestAccessFailure();
-                            break;
-                        case ADAPTER_NOT_DETECTED:
-                            //  Toast.makeText(Activity_HeartRateDisplayBase.this, "ANT Adapter Not Available. Built-in ANT hardware or external adapter required.", Toast.LENGTH_SHORT).show();
-                            //  tv_status.setText("Error. Do Menu->Reset.");
-                            onRequestAccessFailure();
-                            break;
-                        case BAD_PARAMS:
-                            //Note: Since we compose all the params ourself, we should never see this result
-                            //  Toast.makeText(Activity_HeartRateDisplayBase.this, "Bad request parameters.", Toast.LENGTH_SHORT).show();
-                            //  tv_status.setText("Error. Do Menu->Reset.");
-                            onRequestAccessFailure();
-                            break;
-                        case OTHER_FAILURE:
-                            // Toast.makeText(Activity_HeartRateDisplayBase.this, "RequestAccess failed. See logcat for details.", Toast.LENGTH_SHORT).show();
-                            //  tv_status.setText("Error. Do Menu->Reset.");
-                            onRequestAccessFailure();
-                            break;
-                        case DEPENDENCY_NOT_INSTALLED:
-                            onRequestAccessFailure();
+    @Override
+    public void onResultReceived(AntPlusHeartRatePcc result, RequestAccessResult resultCode,
+                                 DeviceState initialDeviceState)
+    {
+        switch(resultCode)
+        {
+            case SUCCESS:
+                m_hrPcc = result;
+                //tv_status.setText(result.getDeviceName() + ": " + initialDeviceState);
+                //showDataDisplay(result.getDeviceName() + ": " + initialDeviceState);
+                subscribeToHrEvents();
+                // if(!result.supportsRssi())
+                //    tv_rssi.setText("N/A");
+                break;
+            case CHANNEL_NOT_AVAILABLE:
+                Toast.makeText(this, "Channel Not Available", Toast.LENGTH_SHORT).show();
+                //  tv_status.setText("Error. Do Menu->Reset.");
+                onRequestAccessFailure();
+                break;
+            case ADAPTER_NOT_DETECTED:
+                Toast.makeText(this, "ANT Adapter Not Available. Built-in ANT hardware or external adapter required.", Toast.LENGTH_SHORT).show();
+                //  tv_status.setText("Error. Do Menu->Reset.");
+                onRequestAccessFailure();
+                break;
+            case BAD_PARAMS:
+                //Note: Since we compose all the params ourself, we should never see this result
+                Toast.makeText(this, "Bad request parameters.", Toast.LENGTH_SHORT).show();
+                //  tv_status.setText("Error. Do Menu->Reset.");
+                onRequestAccessFailure();
+                break;
+            case OTHER_FAILURE:
+                Toast.makeText(this, "RequestAccess failed. See logcat for details.", Toast.LENGTH_SHORT).show();
+                //  tv_status.setText("Error. Do Menu->Reset.");
+                onRequestAccessFailure();
+                break;
+            case DEPENDENCY_NOT_INSTALLED:
+                onRequestAccessFailure();
                            /* tv_status.setText("Error. Do Menu->Reset.");
                             AlertDialog.Builder adlgBldr = new AlertDialog.Builder(Activity_HeartRateDisplayBase.this);
                             adlgBldr.setTitle("Missing Dependency");
@@ -347,26 +365,25 @@ public class MeasureHrvActivity extends AppCompatActivity
 
                             final AlertDialog waitDialog = adlgBldr.create();
                             waitDialog.show();*/
-                            break;
-                        case USER_CANCELLED:
-                            // tv_status.setText("Cancelled. Do Menu->Reset.");
-                            onRequestAccessFailure();
-                            break;
-                        case UNRECOGNIZED:
-                           /* Toast.makeText(Activity_HeartRateDisplayBase.this,
-                                    "Failed: UNRECOGNIZED. PluginLib Upgrade Required?",
-                                    Toast.LENGTH_SHORT).show();
-                            tv_status.setText("Error. Do Menu->Reset.");*/
-                            onRequestAccessFailure();
-                            break;
-                        default:
-                            //  Toast.makeText(Activity_HeartRateDisplayBase.this, "Unrecognized result: " + resultCode, Toast.LENGTH_SHORT).show();
-                            // tv_status.setText("Error. Do Menu->Reset.");
-                            onRequestAccessFailure();
-                            break;
-                    }
-                }
-            };
+                break;
+            case USER_CANCELLED:
+                // tv_status.setText("Cancelled. Do Menu->Reset.");
+                onRequestAccessFailure();
+                break;
+            case UNRECOGNIZED:
+                Toast.makeText(this,
+                        "Failed: UNRECOGNIZED. PluginLib Upgrade Required?",
+                        Toast.LENGTH_SHORT).show();
+                //tv_status.setText("Error. Do Menu->Reset.");
+                onRequestAccessFailure();
+                break;
+            default:
+                  Toast.makeText(this, "Unrecognized result: " + resultCode, Toast.LENGTH_SHORT).show();
+                // tv_status.setText("Error. Do Menu->Reset.");
+                onRequestAccessFailure();
+                break;
+        }
+    }
 
     //Receives state changes and shows it on the status display line
     AntPluginPcc.IDeviceStateChangeReceiver base_IDeviceStateChangeReceiver =
