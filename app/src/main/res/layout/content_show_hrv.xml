@@ -83,7 +83,8 @@
                 app:headerText="Sleep Quality"
                 app:maxText="Very Good"
                 app:maxValue="20"
-                app:minText="Very Bad" />
+                app:minText="Very Bad"
+                app:midText="Average"/>
 
             <denwan.hrvtool.CustomSlider
                 android:id="@+id/customSliderPhysical"
@@ -93,9 +94,8 @@
                 app:headerText="Physical Health"
                 app:maxText="Very Good"
                 app:maxValue="20"
-                app:minText="Very Bad">
-
-            </denwan.hrvtool.CustomSlider>
+                app:minText="Very Bad"
+                app:midText="Average"/>
 
             <denwan.hrvtool.CustomSlider
                 android:id="@+id/customSliderMental"
@@ -105,7 +105,8 @@
                 app:headerText="Mental Health"
                 app:maxText="Very Good"
                 app:maxValue="20"
-                app:minText="Very Bad" />
+                app:minText="Very Bad"
+                app:midText="Average"/>
         </LinearLayout>
     </ScrollView>
 
