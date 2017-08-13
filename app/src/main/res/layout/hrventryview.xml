@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:text="11.12.2018 24:99"
         android:textAlignment="center"
-        android:background="@color/black_overlay"
+        android:background="#2FF0F0F0"
         android:textSize="18sp" />
 
     <TextView
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:text="6.20"
         android:textAlignment="center"
-        android:background="@color/black_overlay"
+        android:background="#2FF0F0F0"
         android:textSize="18sp"/>
 
     <TextView
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:text="800.00 ms"
         android:textAlignment="center"
-        android:background="@color/black_overlay"
+        android:background="#2FF0F0F0"
         android:textSize="18sp"/>
 
 </LinearLayout>
