@@ -9,8 +9,7 @@
         android:layout_width="200dp"
         android:layout_height="40dp"
         android:layout_below="@+id/textViewHeader"
-        android:layout_centerHorizontal="true"
-        android:layout_weight="1" />
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/textViewHeader"
@@ -31,7 +30,7 @@
         android:layout_below="@+id/customSliderSeekBar"
         android:paddingBottom="4dp"
         android:text="Min Text"
-        android:textSize="10sp" />
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/textViewMaxText"
@@ -41,6 +40,6 @@
         android:layout_below="@+id/customSliderSeekBar"
         android:paddingBottom="4dp"
         android:text="Max Text"
-        android:textSize="10sp" />
+        android:textSize="12sp" />
 
 </RelativeLayout>
