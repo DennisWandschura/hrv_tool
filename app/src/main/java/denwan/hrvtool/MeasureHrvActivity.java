@@ -85,6 +85,10 @@ public class MeasureHrvActivity extends AppCompatActivity implements AntPluginPc
             m_hrPcc.releaseAccess();
             releaseHandle();
 
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            setProgressBarProgress(0);
+
             if(!failed)
             {
                 float rr[] = m_rrReceiver.getHrvData();
@@ -97,21 +101,24 @@ public class MeasureHrvActivity extends AppCompatActivity implements AntPluginPc
                     int firstOfTodayIdx = Native.getFirstOfToday(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day);
                     boolean isFirstOfDay = (firstOfTodayIdx == -1);
 
-                    m_updatedIndices = false;
+                   // m_updatedIndices = false;
                     m_index = denwan.hrv.Native.createNewEntry(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute, rr, isFirstOfDay);
-                    if (m_index == -1) {
+
+                    m_updatedIndices = (m_index == -1);
+                    if (m_updatedIndices) {
                         Native.updateIndices();
 
                         m_index = Native.getIndex(m_measurementTime.year, m_measurementTime.month, m_measurementTime.day, m_measurementTime.hour, m_measurementTime.minute);
-                        m_updatedIndices= true;
+                        //m_updatedIndices = true;
                     }
-
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
                     Intent intent = new Intent(this, ShowHrvActivity.class);
                     intent.putExtra(Native.MEASUREMENT_IDX, m_index);
                     startActivityForResult(intent, SHOW_HRV_MEASUREMENT_RESULT);
                 }
+
+                m_rrReceiver = null;
+                m_measurementTime = null;
             }
         }
     }
