@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,7 @@ public class HrvFragment extends Fragment {
                 onClickEntry(v);
             }
         });
+        entryView.setHorizontalGravity(Gravity.CENTER_HORIZONTAL);
         m_hrvEntries.addView(entryView, offset);
         m_hrv_views.add(entryView);
     }

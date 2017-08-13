@@ -1,6 +1,8 @@
 package denwan.hrvtool;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,14 +36,44 @@ public class HrvEntryView extends LinearLayout {
         LayoutInflater li = (LayoutInflater) getContext().getSystemService(service);
         LinearLayout layout = (LinearLayout) li.inflate(R.layout.hrventryview, this, true);
 
-        m_textDate = (TextView) layout.findViewById(R.id.hrv_entry_textViewDate);
-        m_textRmssd = (TextView) layout.findViewById(R.id.hrv_entry_textViewRMSSD);
-        m_textLnRmssd = (TextView) layout.findViewById(R.id.hrv_entry_textViewLnRMSSD);
+        setViews(layout);
 
         m_idx = idx;
         m_dateTime = Native.getDateTime(idx);
 
         setEntryData();
+    }
+
+    public HrvEntryView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.HrvEntryView);
+
+        String service = Context.LAYOUT_INFLATER_SERVICE;
+        LayoutInflater li = (LayoutInflater) getContext().getSystemService(service);
+        LinearLayout layout = (LinearLayout) li.inflate(R.layout.hrventryview, this, true);
+
+        setViews(layout);
+
+        String dateText = a.getString(R.styleable.HrvEntryView_hrv_dateText);
+        float rmssd = a.getFloat(R.styleable.HrvEntryView_hrv_rmssd, 0.0f);
+
+        m_textDate.setText(dateText);
+
+        m_textRmssd.setText(String.format(Locale.getDefault(), "%.2f ms", rmssd));
+        m_textLnRmssd.setText(String.format(Locale.getDefault(), "%.2f", Math.log(rmssd)));
+
+        m_idx = -1;
+        m_dateTime = null;
+
+        a.recycle();
+    }
+
+    void setViews( LinearLayout layout)
+    {
+        m_textDate = (TextView) layout.findViewById(R.id.hrv_entry_textViewDate);
+        m_textRmssd = (TextView) layout.findViewById(R.id.hrv_entry_textViewRMSSD);
+        m_textLnRmssd = (TextView) layout.findViewById(R.id.hrv_entry_textViewLnRMSSD);
     }
 
     void setEntryData()
