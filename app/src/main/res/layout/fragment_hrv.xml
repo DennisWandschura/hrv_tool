@@ -8,17 +8,21 @@
         android:id="@+id/fragment_hrv_button_measure"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="10dp"
         android:text="Measure HRV"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/fragment_hrv_button_measure"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:scrollbarStyle="insideOverlay">
 
         <LinearLayout
             android:id="@+id/fragment_hrv_hrv_scroll_list"
