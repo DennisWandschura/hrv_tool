@@ -3,6 +3,7 @@
     <declare-styleable name="CustomSlider">
         <attr name="headerText" format="string" />
         <attr name="minText" format="string" />
+        <attr name="midText" format="string" />
         <attr name="maxText" format="string" />
         <attr name="maxValue" format="integer"/>
     </declare-styleable>
