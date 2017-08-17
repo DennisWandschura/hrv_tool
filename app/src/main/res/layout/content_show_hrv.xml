@@ -27,7 +27,7 @@
         android:layout_below="@+id/textViewHRVEntry"
         android:layout_marginEnd="5dp"
         android:layout_marginStart="5dp"
-        android:background="#dddddddd">
+        android:background="#3c3c3c">
 
         <LinearLayout
             android:id="@+id/linearLayoutShowHRV"
