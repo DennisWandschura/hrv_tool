@@ -16,4 +16,5 @@
     <string name="rmssd">RMSSD</string>
     <string name="_7_day_avg">7 Day Avg</string>
     <string name="today">Today</string>
+    <string name="action_export_csv">Export RMSSD as CSV</string>
 </resources>
