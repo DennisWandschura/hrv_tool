@@ -11,7 +11,7 @@ Credits:
 Using Linear detrend function from https://github.com/lppier/DSPFunctions
 Frequency domain code (Lomb Scargle) converted from MATLAB code https://github.com/jramshur/HRVAS
 
-![Overview](/screenshot_overview.png?raw=true "Overview")
-![HRV](/screenshot_hrv.png?raw=true "HRV")
-![Charts](/screenshot_charts.png?raw=true "Charts")
-![Settings](/screenshot_settings.png?raw=true "Settings")
+![Overview](/screenshot_overview.png?raw=true "Overview"){:height="50%" width="50%"}
+![HRV](/screenshot_hrv.png?raw=true "HRV"){:height="50%" width="50%"}
+![Charts](/screenshot_charts.png?raw=true "Charts"){:height="50%" width="50%"}
+![Settings](/screenshot_settings.png?raw=true "Settings"){:height="50%" width="50%"}
