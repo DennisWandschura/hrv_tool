@@ -12,8 +12,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
+import denwan.hrv.DateTime;
 import denwan.hrv.Native;
 
 /**
@@ -180,5 +184,21 @@ public class HrvFragment extends Fragment {
         void onFragmentInteraction(HrvEntryView item);
 
         void onAttach(HrvFragment fragment);
+    }
+
+    private void export_RMSSD_ToCsv(FileOutputStream file) throws IOException
+    {
+        Locale defaultLocale = Locale.getDefault();
+
+        int count = Native.getEntryCount();
+        for(int i = 0; i < count; ++i)
+        {
+            float rmssd = Native.getRMSSD(i);
+            DateTime dt = Native.getDateTime(i);
+
+            String data = String.format(defaultLocale, "%02d.%02d.%d, %02d:02%d, %f", dt.day, dt.month, dt.year, dt.hour, dt.minute, rmssd);
+
+            file.write(data.getBytes());
+        }
     }
 }
