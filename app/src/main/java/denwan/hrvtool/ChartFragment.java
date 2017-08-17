@@ -1,13 +1,14 @@
 package denwan.hrvtool;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -17,23 +18,29 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 
-import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
 
 import denwan.hrv.DateTime;
 import denwan.hrv.Native;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ChartFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ChartFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ChartFragment extends Fragment {
+public class ChartFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+
+    private enum OffsetType{Days, Weeks, Months};
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        // An item was selected. You can retrieve the selected item using
+        SpinnerData data = (SpinnerData)parent.getItemAtPosition(position);
+        updateChart(data);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 
     private class MyYAxisValueFormatter implements IAxisValueFormatter {
 
@@ -55,13 +62,53 @@ public class ChartFragment extends Fragment {
         }
     }
 
+    private class SpinnerData
+    {
+        OffsetType type;
+        int offset;
+
+        SpinnerData(OffsetType type, int offset)
+        {
+            this.type = type;
+            this.offset=offset;
+        }
+
+        @Override
+        public String toString()
+        {
+            String text = "Error";
+            switch (type) {
+                case Days:
+                {
+                    if (offset == 1)
+                        text = "Day";
+                    else
+                        text = "Days";
+                }break;
+                case Weeks:
+                {
+                    if(offset == 1)
+                        text = "Week";
+                    else
+                        text = "Weeks";
+                }break;
+                case Months:
+                {
+                    if(offset == 1)
+                        text = "Month";
+                    else
+                        text = "Months";
+                }break;
+            }
+
+            return String.format(Locale.getDefault(), "%d %s", offset, text);
+        }
+    }
+
     private LineChart m_lineChart;
-    private LineDataSet m_dataSet;
-    private ArrayList<Entry> m_chartEntries;
-    //private OnFragmentInteractionListener mListener;
+    Spinner m_spinner;
 
     public ChartFragment() {
-        // Required empty public constructor
     }
 
     /**
@@ -77,34 +124,76 @@ public class ChartFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
 
+    private void updateChartDataRMSSDOffsetDays(int offsetInDays)
+    {
+        Calendar today = Calendar.getInstance();
+        int dayOfYear = today.get(Calendar.DAY_OF_YEAR);
+        int startDayOfYear = dayOfYear - offsetInDays;
 
+        Calendar current = Calendar.getInstance();
+        current.set(Calendar.DAY_OF_YEAR, startDayOfYear);
+
+        ArrayList<Entry> chartEntries = new ArrayList<>();
+        DateTime dateTimes[] = new DateTime[offsetInDays];
+        for(int i = 0; i < offsetInDays; ++i)
+        {
+            current.add(Calendar.DAY_OF_YEAR, 1);
+
+            int year = current.get(Calendar.YEAR);
+            int month = current.get(Calendar.MONTH);
+            int day = current.get(Calendar.DAY_OF_MONTH);
+
+            float rmssd = Native.getAverageRmssd1(year, month, day) * 1000.f;
+
+            chartEntries.add(new Entry(i, rmssd));
+
+            dateTimes[i] = new DateTime(year, month, day, 0, 0);
+        }
+
+        ////////////////////////////////////////
+
+        XAxis xAxis = m_lineChart.getXAxis();
+        xAxis.setValueFormatter(new MyYAxisValueFormatter(dateTimes));
+
+        LineDataSet dataSet = new LineDataSet(chartEntries, "RMSSD");
+        LineData lineData = new LineData(dataSet);
+        lineData.setValueTextColor(0xFFFFFFFF);
+        m_lineChart.setData(lineData);
+    }
+
+    void updateChart(SpinnerData data)
+    {
+        int offset = data.offset;
+        switch (data.type) {
+            case Days:
+            {
+                updateChartDataRMSSDOffsetDays(offset);
+            }break;
+            case Weeks:
+            {
+                int offsetInDays = offset * 7;
+                updateChartDataRMSSDOffsetDays(offsetInDays);
+            }break;
+            case Months:
+            {
+
+            }break;
+        }
+
+        m_lineChart.getDescription().setEnabled(false);
+        XAxis xAxis = m_lineChart.getXAxis();
+        xAxis.setTextSize(8.f);
+        xAxis.setTextColor(0xFFFFFFFF);
+
+        m_lineChart.invalidate();
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        DateTime dt[] = new DateTime[7];
-        m_chartEntries = new ArrayList<>();
-        for(int i = 0; i < 7; ++i)
-        {
-            DateTime today = DateTime.startOfToday(i - 6);
-            float rmssd = Native.getAverageRmssd1(today.year, today.month, today.day) * 1000.f;
-
-            m_chartEntries.add(new Entry(i, rmssd));
-
-            dt[i] = today;
-        }
-
-        m_dataSet = new LineDataSet(m_chartEntries, "RMSSD");
-        LineData lineData = new LineData(m_dataSet);
-        m_lineChart.setData(lineData);
-        m_lineChart.getDescription().setEnabled(false);
-        XAxis xAxis = m_lineChart.getXAxis();
-        xAxis.setValueFormatter(new MyYAxisValueFormatter(dt));
-        xAxis.setTextSize(8.f);
-        m_lineChart.invalidate(); // refresh
     }
 
     @Override
@@ -114,6 +203,16 @@ public class ChartFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_chart, container, false);
 
         m_lineChart = (LineChart)view.findViewById(R.id.chart);
+        m_spinner = (Spinner)view.findViewById(R.id.spinner);
+
+        ArrayAdapter<SpinnerData> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        adapter.add(new SpinnerData(OffsetType.Weeks, 1));
+        adapter.add(new SpinnerData(OffsetType.Weeks, 2));
+        adapter.add(new SpinnerData(OffsetType.Months, 1));
+        adapter.add(new SpinnerData(OffsetType.Months, 3));
+        adapter.add(new SpinnerData(OffsetType.Months, 6));
+        m_spinner.setAdapter(adapter);
+        m_spinner.setOnItemSelectedListener(this);
 
         return view;
     }
@@ -121,32 +220,10 @@ public class ChartFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        /*if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        //mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction();
     }
 }
